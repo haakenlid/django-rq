@@ -1,6 +1,7 @@
 from __future__ import division
 
 from math import ceil
+from urllib.parse import quote, unquote
 
 from django.contrib import admin, messages
 from django.contrib.admin.views.decorators import staff_member_required
@@ -14,11 +15,11 @@ from rq import requeue_job
 from rq.exceptions import NoSuchJobError
 from rq.job import Job, JobStatus
 from rq.registry import (
-    DeferredJobRegistry, 
-    FailedJobRegistry, 
-    FinishedJobRegistry, 
+    DeferredJobRegistry,
+    FailedJobRegistry,
+    FinishedJobRegistry,
     ScheduledJobRegistry,
-    StartedJobRegistry, 
+    StartedJobRegistry,
 )
 from rq.worker import Worker
 
@@ -311,6 +312,7 @@ def deferred_jobs(request, queue_index):
 @never_cache
 @staff_member_required
 def job_detail(request, queue_index, job_id):
+    job_id = unquote(job_id)
     queue_index = int(queue_index)
     queue = get_queue_by_index(queue_index)
     try:
@@ -321,14 +323,14 @@ def job_detail(request, queue_index, job_id):
     try:
         job.func_name
         data_is_valid = True
-    except:
+    except Exception:
         data_is_valid = False
 
     context_data = {
         **admin.site.each_context(request),
         'queue_index': queue_index,
         'job': job,
-        'dependency_id': job._dependency_id, 
+        'dependency_id': job._dependency_id,
         'queue': queue,
         'data_is_valid': data_is_valid
     }
@@ -338,6 +340,7 @@ def job_detail(request, queue_index, job_id):
 @never_cache
 @staff_member_required
 def delete_job(request, queue_index, job_id):
+    job_id = unquote(job_id)
     queue_index = int(queue_index)
     queue = get_queue_by_index(queue_index)
     job = Job.fetch(job_id, connection=queue.connection)
@@ -361,6 +364,7 @@ def delete_job(request, queue_index, job_id):
 @never_cache
 @staff_member_required
 def requeue_job_view(request, queue_index, job_id):
+    job_id = unquote(job_id)
     queue_index = int(queue_index)
     queue = get_queue_by_index(queue_index)
     job = Job.fetch(job_id, connection=queue.connection)
@@ -488,8 +492,8 @@ def actions(request, queue_index):
 @never_cache
 @staff_member_required
 def enqueue_job(request, queue_index, job_id):
-    """ Enqueue deferred jobs
-    """
+    """ Enqueue deferred jobs """
+    job_id = unquote(job_id)
     queue_index = int(queue_index)
     queue = get_queue_by_index(queue_index)
     job = Job.fetch(job_id, connection=queue.connection)

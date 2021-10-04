@@ -87,7 +87,7 @@
                                     <input class="action-select" name="_selected_action" type="checkbox" value="{{ job.id }}">
                                 </td>
                                 <th>
-                                    <a href = "{% url 'rq_job_detail' queue_index job.id %}">
+                                    <a href = "{% url 'rq_job_detail' queue_index job.id|urlencode:'' %}">
                                         {{ job.id }}
                                     </a>
                                 </th>

@@ -23,7 +23,7 @@
         <a href="{% url 'admin:index' %}">Home</a> &rsaquo;
         <a href="{% url 'rq_home' %}">Django RQ</a> &rsaquo;
         <a href = "{% url 'rq_jobs' queue_index %}">{{ queue.name }}</a> &rsaquo;
-        <a href = "{% url 'rq_job_detail' queue_index job.id %}">{{ job.id }}</a>
+        <a href = "{% url 'rq_job_detail' queue_index job.id|urlencode:'' %}">{{ job.id }}</a>
     </div>
 {% endblock %}
 
@@ -191,13 +191,13 @@
     <div class="submit-row">
         <p class="deletelink-box"><a href="delete/" class="deletelink">Delete</a></p>
         {% if job.is_failed %}
-            <form method = 'POST' action = "{% url 'rq_requeue_job' queue_index job.id %}">
+            <form method = 'POST' action = "{% url 'rq_requeue_job' queue_index job.id|urlencode:'' %}">
                 {% csrf_token %}
                 <input type="submit" value="Requeue" class="default" name="requeue">
             </form>
         {% endif %}
         {% if not job.is_queued and not job.is_failed %}
-            <form method = 'POST' action = "{% url 'rq_enqueue_job' queue_index job.id %}">
+            <form method = 'POST' action = "{% url 'rq_enqueue_job' queue_index job.id|urlencode:'' %}">
                 {% csrf_token %}
                 <input type="submit" value="Enqueue" class="default" name="Enqueue">
             </form>

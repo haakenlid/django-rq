@@ -1,7 +1,13 @@
-from django.urls import re_path
+from django.urls import include, re_path
 
 from . import views
 
+detail_routes = [
+    re_path('^$', views.job_detail, name='rq_job_detail'),
+    re_path(r'^/delete/$', views.delete_job, name='rq_delete_job'),
+    re_path(r'^/requeue/$', views.requeue_job_view, name='rq_requeue_job'),
+    re_path(r'^/enqueue/$', views.enqueue_job_view, name='rq_enqueue_job'),
+]
 
 urlpatterns = [
     re_path(r'^$',
@@ -28,16 +34,10 @@ urlpatterns = [
             views.clear_queue, name='rq_clear'),
     re_path(r'^queues/(?P<queue_index>[\d]+)/requeue-all/$',
             views.requeue_all, name='rq_requeue_all'),
-    re_path(r'^queues/(?P<queue_index>[\d]+)/(?P<job_id>[-\w\.\:\$]+)/$',
-            views.job_detail, name='rq_job_detail'),
-    re_path(r'^queues/(?P<queue_index>[\d]+)/(?P<job_id>[-\w\.\:\$]+)/delete/$',
-            views.delete_job, name='rq_delete_job'),
     re_path(r'^queues/confirm-action/(?P<queue_index>[\d]+)/$',
             views.confirm_action, name='rq_confirm_action'),
     re_path(r'^queues/actions/(?P<queue_index>[\d]+)/$',
             views.actions, name='rq_actions'),
-    re_path(r'^queues/(?P<queue_index>[\d]+)/(?P<job_id>[-\w\.\:\$]+)/requeue/$',
-            views.requeue_job_view, name='rq_requeue_job'),
-    re_path(r'^queues/(?P<queue_index>[\d]+)/(?P<job_id>[-\w\.\:\$]+)/enqueue/$',
-            views.enqueue_job, name='rq_enqueue_job'),
+    re_path(r'^queues/(?P<queue_index>[\d]+)/(?P<job_id>[-A-Za-z0-9_~.%]+)/',
+            include(detail_routes)),
 ]
